@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="this-file-does-not-exist.png">
+	<SubTexture name="RequiredAttributes" x="10" y="20" width="30" height="40" />
+	<SubTexture name="OptionalAttributes" x="10" y="20" width="30" height="40" frameX="50" frameY="60" frameWidth="70" frameHeight="80" flipX="true" flipY="true" rotated="false" />
+</TextureAtlas>

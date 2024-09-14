@@ -1,0 +1,11 @@
+-lib utest
+
+--class-path src
+--class-path tests
+
+--resource tests/texture-atlas-example.xml
+
+-main RunTests
+--interp
+
+-D no-deprecation-warnings

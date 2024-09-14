@@ -1,19 +1,22 @@
 package;
 
-import haxe.CallStack;
-
+import lime.graphics.Image;
+import utils.Loader;
+import peote.view.*;
+import lime.utils.Assets;
 import lime.app.Application;
 import lime.ui.Window;
 
-import peote.view.PeoteView;
-import peote.view.Buffer;
-import peote.view.Display;
-import peote.view.Program;
-import peote.view.Color;
+import haxe.CallStack;
 
+import Sprite;
+import TextureAtlas;
 
 class Main extends Application
 {
+	var isReady:Bool = false;
+	var atlasSprites:AtlasSprites;
+
 	override function onWindowCreate():Void
 	{
 		switch (window.context.type)
@@ -32,16 +35,21 @@ class Main extends Application
 	public function startSample(window:Window)
 	{
 		var peoteView = new PeoteView(window);
-
-		var buffer = new Buffer<Sprite>(4, 4, true);
-		var display = new Display(10, 10, window.width - 20, window.height - 20, Color.GREEN);
-		var program = new Program(buffer);
-
+		var display = new Display(10, 10, window.width - 20, window.height - 20, Color.GREY3);
 		peoteView.addDisplay(display);
-		display.addProgram(program);
 
-		var sprite = new Sprite();
-		buffer.addElement(sprite);
+		Loader.image("assets/spritesheet_default.png", (image:Image)->{
+			Loader.text("assets/spritesheet_default.xml", (text:String)->{
+				var texture = Texture.fromData(image);
+				var atlas = parseXml(text);
+				atlasSprites = new AtlasSprites(texture, atlas, "spritesheet_default");
+				atlasSprites.addToDisplay(display);
+
+				var sprite = atlasSprites.createByName("body_yellowA.png", 100, 100);
+
+				isReady = true;
+			});
+		});
 	}
 	
 	// ------------------------------------------------------------
@@ -53,7 +61,9 @@ class Main extends Application
 	}
 
 	override function update(deltaTime:Int):Void {
+		if(!isReady) return;
 		// for game-logic update
+		atlasSprites.update();
 	}
 
 	// override function render(context:lime.graphics.RenderContext):Void {}

@@ -1,8 +1,7 @@
 package;
 
+import haxe.Timer;
 import lime.ui.*;
-import lime.graphics.Image;
-
 import peote.view.*;
 
 import assets.Pipeline;
@@ -36,41 +35,24 @@ class Main extends lime.app.Application
 		
 		buffer  = new Buffer<ElemAnim>(100);
 		program = new Program(buffer);
+		program.blendEnabled = true;
+
 		display.addProgram(program);
 
-		var textures = new Array<Texture>();
-		var texFileNames = new Array<String>();
+		
+		program.setMultiTexture( PipelineTools.loadTextures(Pipeline.sheets) );
 
-		for (sheet in Pipeline.sheets) {
-			var textureConfig:TextureConfig = {
-				powerOfTwo: false,
-				tilesX: sheet.tilesX,
-				tilesY: sheet.tilesY
-			};
-			textures.push(new Texture(sheet.width, sheet.height, 1, textureConfig));
-			texFileNames.push("assets/" + sheet.name);
-		}
+		
+		ElemAnim.init(buffer, Pipeline.tiles);
 
-		program.setMultiTexture(textures, "custom");
+		var elem = new ElemAnim(20, 20, "haxeLogo");
+		elem.play("sphereRotate", 0, 3);
+		Timer.delay( ()->elem.play("sphereToCubic", peoteView.time, 3), 3000);
+		Timer.delay( ()->elem.play("cubicRotate"  , peoteView.time, 3), 6000);
+		Timer.delay( ()->elem.play("cubicToHaxe"  , peoteView.time, 3), 9000);
+		
 
-		Load.imageArray( texFileNames,
-			true, // debug
-			function(index:Int, image:Image) { // after every single image is loaded
-				trace('File number $index loaded completely.');
-				textures[index].setData(image);
-			},
-			function(images:Array<Image>) { // after all images is loaded
-				trace(' --- all images loaded ---');
-			}
-		);
-
-		// TODO: give the elements its blender -> "Tile" and Animations ;)
-		var elem = new ElemAnim();
-		elem.animTile(0,2);
-		elem.timeTileDuration = 3; // 3 seconds for 3 frames <-
-		buffer.addElement(elem);
-
-		// -> to not forget ;)
+		// -> don't forget to start peoteViews timer <-
 		peoteView.start();
 	}
 	
@@ -78,17 +60,7 @@ class Main extends lime.app.Application
 	// ----------------- LIME EVENTS ------------------------------
 	// ------------------------------------------------------------	
 
-	override function onPreloadComplete():Void {
-		// access embeded assets from here
-	}
-
-	override function update(deltaTime:Int):Void {
-		// for game-logic update
-	}
-
 	// override function render(context:lime.graphics.RenderContext):Void {}
-	// override function onRenderContextLost ():Void trace(" --- WARNING: LOST RENDERCONTEXT --- ");		
-	// override function onRenderContextRestored (context:lime.graphics.RenderContext):Void trace(" --- onRenderContextRestored --- ");		
 
 	// ----------------- MOUSE EVENTS ------------------------------
 	// override function onMouseMove (x:Float, y:Float):Void {}	

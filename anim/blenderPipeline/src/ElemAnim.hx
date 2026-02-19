@@ -1,7 +1,10 @@
 package;
 
+import peote.view.Buffer;
 import peote.view.Element;
 import peote.view.Color;
+import PipelineTools.Tile;
+import PipelineTools.Anim;
 
 class ElemAnim implements Element
 {
@@ -29,14 +32,38 @@ class ElemAnim implements Element
 	@zIndex public var z:Int = 0;
 
 	// texture unit (sheet index!)
-	@texUnit public var unit:Int=0;
+	@texUnit public var sheetIndex:Int=0;
 
 	// @texSlot public var slot:Int = 0;
 
 	// animatable tile-number into sheet
-	@anim("Tile") @texTile public var tile:Int = 0;
+	@anim("Tile") @texTile public var tileIndex:Int = 0;
 
-	public function new() {
+	public static var buffer:Buffer<ElemAnim>;
+	public static var tiles:Map<String, Tile>;
+	public static function init(_buffer:Buffer<ElemAnim>, _tiles:Map<String, Tile>) {
+		buffer = _buffer;
+		tiles = _tiles;
+	}
 
+
+	var tile:Tile;
+
+	public function new(x:Int, y:Int, tileName:String) {
+		this.x = x;
+		this.y = y;
+		tile = tiles.get(tileName);
+		w = tile.width;
+		h = tile.height;
+		sheetIndex = tile.sheetIndex;
+		buffer.addElement(this);
+	}
+
+	public function play(animName:String, startTime:Float, duration:Float) {
+		var anim = tile.anim.get(animName);
+		animTile(anim.start, anim.end);
+		timeTileStart = startTime;
+		timeTileDuration = duration;
+		buffer.updateElement(this);
 	}
 }
